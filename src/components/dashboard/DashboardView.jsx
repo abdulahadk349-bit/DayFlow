@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 
 export const DashboardView = () => {
-  const { tasks, courses, profile, openQuickAdd, setActiveTab } = useApp();
+  const { tasks, courses, profile, streak, openQuickAdd, setActiveTab } = useApp();
   const today = getTodayDateString();
 
   const todayTasks = tasks.filter((t) => t.date === today);
@@ -48,12 +48,22 @@ export const DashboardView = () => {
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                {getGreeting()}, <span className="text-blue-600 dark:text-blue-400">{profile.name}</span>
+                {profile?.name ? (
+                  <>
+                    {getGreeting()},{' '}
+                    <span className="text-blue-600 dark:text-blue-400">{profile.name}</span>
+                  </>
+                ) : (
+                  <>
+                    {getGreeting()}! Welcome to{' '}
+                    <span className="text-blue-600 dark:text-blue-400">DayFlow</span>
+                  </>
+                )}
               </h2>
               <span className="text-2xl">👋</span>
             </div>
             <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 font-medium italic">
-              "{profile.dailyQuote}"
+              "{profile?.dailyQuote || 'Plan your day, build daily momentum, and achieve your goals.'}"
             </p>
           </div>
         </div>
@@ -85,8 +95,8 @@ export const DashboardView = () => {
         />
         <StatCard
           title="Active Streak"
-          value={`${profile.streak} Days`}
-          subtitle="Consecutive productivity"
+          value={`${streak} ${streak === 1 ? 'Day' : 'Days'}`}
+          subtitle={streak === 0 ? 'Start your streak today' : 'Consecutive productivity'}
           icon={Flame}
           colorScheme="amber"
         />

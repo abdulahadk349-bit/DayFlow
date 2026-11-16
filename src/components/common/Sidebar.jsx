@@ -9,13 +9,12 @@ import {
   Flame,
   RotateCcw,
   Sparkles,
-  User,
   Settings,
   X
 } from 'lucide-react';
 
 export const Sidebar = ({ isMobileOpen, setIsMobileOpen }) => {
-  const { activeTab, setActiveTab, openQuickAdd, profile, tasks, resetAll } = useApp();
+  const { activeTab, setActiveTab, openQuickAdd, profile, streak, tasks, resetAll } = useApp();
 
   const navItems = [
     {
@@ -154,19 +153,28 @@ export const Sidebar = ({ isMobileOpen, setIsMobileOpen }) => {
             <div className="bg-gradient-to-br from-blue-50/80 to-slate-50 dark:from-slate-800/80 dark:to-slate-800/40 border border-blue-100 dark:border-slate-800 rounded-2xl p-3.5">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <span className="p-1.5 rounded-lg bg-orange-100 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400">
-                    <Flame className="w-4 h-4 fill-orange-500" />
+                  <span className={`p-1.5 rounded-lg ${
+                    streak > 0 
+                      ? 'bg-orange-100 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500'
+                  }`}>
+                    <Flame className={`w-4 h-4 ${streak > 0 ? 'fill-orange-500 text-orange-500' : ''}`} />
                   </span>
                   <div>
-                    <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                      {profile.streak} Day Streak!
+                    <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
+                      {streak > 0 ? `${streak} Day Streak!` : 'Start Your Streak!'}
                     </span>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400">Keep up the flow</p>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                      {streak > 0 ? 'Keep up the momentum' : 'Complete a task today'}
+                    </p>
                   </div>
                 </div>
               </div>
               <div className="w-full bg-slate-200/70 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
-                <div className="bg-orange-500 h-full rounded-full w-4/5" />
+                <div 
+                  className={`h-full rounded-full transition-all duration-500 ${streak > 0 ? 'bg-orange-500' : 'bg-transparent'}`} 
+                  style={{ width: streak > 0 ? `${Math.min(100, Math.max(15, streak * 20))}%` : '0%' }}
+                />
               </div>
             </div>
           </div>
@@ -186,10 +194,10 @@ export const Sidebar = ({ isMobileOpen, setIsMobileOpen }) => {
                 <UserAvatar profile={profile} size="md" showRoleBadge />
                 <div className="min-w-0 flex-1">
                   <p className="text-xs font-bold text-slate-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                    {profile.name}
+                    {profile.name || 'Set Up Profile'}
                   </p>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
-                    {profile.role}
+                    {profile.name ? profile.role : 'Customize account'}
                   </p>
                 </div>
               </button>
@@ -214,7 +222,7 @@ export const Sidebar = ({ isMobileOpen, setIsMobileOpen }) => {
                 <button
                   type="button"
                   onClick={resetAll}
-                  title="Reset sample data"
+                  title="Reset all data"
                   className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
                 >
                   <RotateCcw className="w-4 h-4" />

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
-import { GraduationCap, ChevronRight } from 'lucide-react';
+import { GraduationCap, ChevronRight, BookOpen } from 'lucide-react';
 import { ProgressBar } from '../common/ProgressBar';
 
 export const SyllabusSnapshotWidget = () => {
@@ -21,60 +21,81 @@ export const SyllabusSnapshotWidget = () => {
               <p className="text-xs text-slate-500 dark:text-slate-400">Active subjects & chapter goals</p>
             </div>
           </div>
-          <button
-            onClick={() => setActiveTab('progress')}
-            className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 flex items-center gap-0.5"
-          >
-            Manage
-            <ChevronRight className="w-3.5 h-3.5" />
-          </button>
+          {courses.length > 0 && (
+            <button
+              onClick={() => setActiveTab('progress')}
+              className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 flex items-center gap-0.5"
+            >
+              Manage
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
 
         <div className="space-y-4">
-          {courses.slice(0, 3).map((course) => {
-            const total = course.chapters.length;
-            const completed = course.chapters.filter((c) => c.status === 'Completed').length;
-            const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
-
-            // find the first chapter in progress or not started
-            const currentChapter =
-              course.chapters.find((c) => c.status === 'In Progress') ||
-              course.chapters.find((c) => c.status === 'Not Started');
-
-            return (
-              <div
-                key={course.id}
-                className="p-3.5 rounded-2xl bg-slate-50/60 dark:bg-slate-800/50 border border-slate-200/70 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all"
+          {courses.length === 0 ? (
+            <div className="text-center py-8 px-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800">
+              <GraduationCap className="w-8 h-8 mx-auto text-slate-300 dark:text-slate-600 mb-2" />
+              <p className="text-xs font-semibold text-slate-600 dark:text-slate-300">
+                No syllabus subjects tracked yet.
+              </p>
+              <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">
+                Add courses and chapters to track your study curriculum.
+              </p>
+              <button
+                onClick={() => setActiveTab('progress')}
+                className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-xs transition-colors shadow-xs"
               >
-                <div className="flex items-center justify-between mb-1.5">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <span className="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
-                      {course.code}
-                    </span>
-                    <span className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">
-                      {course.name}
+                <BookOpen className="w-3.5 h-3.5" />
+                Add Syllabus Course
+              </button>
+            </div>
+          ) : (
+            courses.slice(0, 3).map((course) => {
+              const total = course.chapters.length;
+              const completed = course.chapters.filter((c) => c.status === 'Completed').length;
+              const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+              // find the first chapter in progress or not started
+              const currentChapter =
+                course.chapters.find((c) => c.status === 'In Progress') ||
+                course.chapters.find((c) => c.status === 'Not Started');
+
+              return (
+                <div
+                  key={course.id}
+                  className="p-3.5 rounded-2xl bg-slate-50/60 dark:bg-slate-800/50 border border-slate-200/70 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all"
+                >
+                  <div className="flex items-center justify-between mb-1.5">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
+                        {course.code}
+                      </span>
+                      <span className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">
+                        {course.name}
+                      </span>
+                    </div>
+                    <span className="text-xs font-extrabold text-blue-600 dark:text-blue-400 shrink-0 ml-2">
+                      {percentage}%
                     </span>
                   </div>
-                  <span className="text-xs font-extrabold text-blue-600 dark:text-blue-400 shrink-0 ml-2">
-                    {percentage}%
-                  </span>
-                </div>
 
-                <ProgressBar progress={percentage} height="h-2" color="bg-blue-600 dark:bg-blue-500" />
+                  <ProgressBar progress={percentage} height="h-2" color="bg-blue-600 dark:bg-blue-500" />
 
-                <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 mt-2">
-                  <span>
-                    {completed}/{total} chapters done
-                  </span>
-                  {currentChapter && (
-                    <span className="text-slate-600 dark:text-slate-300 font-medium truncate max-w-[170px]">
-                      Next: {currentChapter.title.split(':')[0]}
+                  <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 mt-2">
+                    <span>
+                      {completed}/{total} chapters done
                     </span>
-                  )}
+                    {currentChapter && (
+                      <span className="text-slate-600 dark:text-slate-300 font-medium truncate max-w-[170px]">
+                        Next: {currentChapter.title.split(':')[0]}
+                      </span>
+                    )}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })
+          )}
         </div>
       </div>
 

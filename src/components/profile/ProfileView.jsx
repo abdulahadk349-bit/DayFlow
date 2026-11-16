@@ -111,13 +111,13 @@ export const ProfileView = () => {
     e?.preventDefault();
 
     updateProfile({
-      name: name.trim() || 'Alex Rivera',
+      name: name.trim(),
       email: email.trim(),
       role,
       bio: bio.trim(),
       avatar,
       avatarPreset,
-      dailyQuote: dailyQuote.trim() || 'Consistency is the playground of mastery.',
+      dailyQuote: dailyQuote.trim(),
       dailyGoal: Number(dailyGoal) || 6,
     });
 
@@ -320,7 +320,7 @@ export const ProfileView = () => {
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="e.g. Alex Rivera"
+                placeholder="Enter your name"
                 className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/80 text-slate-900 dark:text-white placeholder:text-slate-400 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
               />
             </div>

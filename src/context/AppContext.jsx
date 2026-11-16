@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import {
   loadStoredTasks,
   saveStoredTasks,
@@ -13,9 +13,15 @@ import {
   saveStoredTimerSettings,
   loadStoredCustomPresets,
   saveStoredCustomPresets,
+  loadStoredStreakHistory,
+  saveStoredStreakHistory,
   resetAllDataToDefault
 } from '../utils/storage';
-import { getTodayDateString } from '../utils/dateUtils';
+import {
+  getTodayDateString,
+  computeActiveDates,
+  calculateStreak
+} from '../utils/dateUtils';
 import { defaultSettings, defaultTimerSettings } from '../data/initialData';
 
 const AppContext = createContext(null);
@@ -27,6 +33,7 @@ export const AppProvider = ({ children }) => {
   const [settings, setSettings] = useState(() => loadStoredSettings());
   const [timerSettings, setTimerSettings] = useState(() => loadStoredTimerSettings());
   const [customPresets, setCustomPresets] = useState(() => loadStoredCustomPresets());
+  const [streakHistory, setStreakHistory] = useState(() => loadStoredStreakHistory());
 
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
@@ -62,6 +69,27 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     saveStoredCustomPresets(customPresets);
   }, [customPresets]);
+
+  // Dynamic calendar streak calculation
+  const todayStr = getTodayDateString();
+  const activeDates = useMemo(() => {
+    return computeActiveDates(tasks, streakHistory, todayStr);
+  }, [tasks, streakHistory, todayStr]);
+
+  const streak = useMemo(() => {
+    return calculateStreak(activeDates, todayStr);
+  }, [activeDates, todayStr]);
+
+  // Sync streak history array to localStorage whenever active dates change
+  useEffect(() => {
+    const datesArr = Array.from(activeDates);
+    saveStoredStreakHistory(datesArr);
+  }, [activeDates]);
+
+  // Provide profile augmented with dynamic streak
+  const profileWithStreak = useMemo(() => {
+    return { ...profile, streak };
+  }, [profile, streak]);
 
   // Theme management (Light, Dark, System)
   useEffect(() => {
@@ -193,14 +221,18 @@ export const AppProvider = ({ children }) => {
   };
 
   const toggleTaskComplete = (id) => {
+    const currentToday = getTodayDateString();
     setTasks((prev) =>
       prev.map((t) => {
         if (t.id === id) {
           const nextStatus = !t.completed;
           if (nextStatus) {
             showToast(`Completed "${t.title}"! 🎉`, 'success');
+            // If the task date is in the past (e.g. testing controlled dates), preserve task date
+            const compDate = t.date && t.date < currentToday ? t.date : currentToday;
+            return { ...t, completed: true, completedDate: compDate };
           }
-          return { ...t, completed: nextStatus };
+          return { ...t, completed: false, completedDate: null };
         }
         return t;
       })
@@ -311,7 +343,8 @@ export const AppProvider = ({ children }) => {
     setSettings(res.settings);
     setTimerSettings(res.timer);
     setCustomPresets(res.customPresets);
-    showToast('Reset to default sample data', 'info');
+    setStreakHistory([]);
+    showToast('Cleared all data to fresh start', 'info');
   };
 
   const openQuickAdd = (category = null) => {
@@ -324,9 +357,11 @@ export const AppProvider = ({ children }) => {
       value={{
         tasks,
         courses,
-        profile,
+        profile: profileWithStreak,
         setProfile,
         updateProfile,
+        streak,
+        activeDates,
         settings,
         setSettings,
         updateSettings,

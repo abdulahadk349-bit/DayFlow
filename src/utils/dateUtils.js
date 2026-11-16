@@ -18,6 +18,25 @@ export const getTodayDateString = () => {
   return `${year}-${month}-${day}`;
 };
 
+/**
+ * Calculates a date string 'YYYY-MM-DD' offset by a number of days
+ * Uses local calendar math without timezone/hour drift
+ */
+export const getOffsetDateString = (baseDateStr, dayOffset) => {
+  if (!baseDateStr) return getTodayDateString();
+  const parts = baseDateStr.split('-').map(Number);
+  if (parts.length !== 3 || parts.some(isNaN)) {
+    return getTodayDateString();
+  }
+  const [year, month, day] = parts;
+  const d = new Date(year, month - 1, day);
+  d.setDate(d.getDate() + dayOffset);
+  const resYear = d.getFullYear();
+  const resMonth = String(d.getMonth() + 1).padStart(2, '0');
+  const resDay = String(d.getDate()).padStart(2, '0');
+  return `${resYear}-${resMonth}-${resDay}`;
+};
+
 export const getRelativeDateLabel = (dateString) => {
   if (!dateString) return '';
   const todayStr = getTodayDateString();
@@ -90,4 +109,82 @@ export const getCurrentWeekDates = (weekStartDay = 'monday') => {
     });
   }
   return week;
+};
+
+/**
+ * Computes active completion dates from tasks and persistent streak history.
+ * An active calendar day is a day with at least one completed task.
+ */
+export const computeActiveDates = (tasks = [], streakHistory = [], todayStr = getTodayDateString()) => {
+  const activeDates = new Set(streakHistory || []);
+
+  // Check if any task is completed today
+  const hasCompletedToday = tasks.some((t) => {
+    if (!t.completed) return false;
+    const completionDate = t.completedDate || t.date;
+    return completionDate === todayStr;
+  });
+
+  // If no task is completed today, ensure today is not marked active
+  if (!hasCompletedToday) {
+    activeDates.delete(todayStr);
+  } else {
+    activeDates.add(todayStr);
+  }
+
+  // Include any other dates where tasks are currently completed
+  tasks.forEach((t) => {
+    if (t.completed) {
+      const completionDate = t.completedDate || t.date;
+      if (completionDate) {
+        activeDates.add(completionDate);
+      }
+    }
+  });
+
+  return activeDates;
+};
+
+/**
+ * Computes the consecutive active days streak using the user's local date.
+ * - 0 days if no tasks have been completed.
+ * - If today has a completed task: streak = 1 + consecutive previous days.
+ * - If today has no completed task yet, but yesterday did: streak is preserved
+ *   from yesterday until today's window expires.
+ * - If yesterday was missed: streak is 0.
+ */
+export const calculateStreak = (activeDates, todayStr = getTodayDateString()) => {
+  const datesSet = activeDates instanceof Set ? activeDates : new Set(activeDates || []);
+
+  if (datesSet.size === 0) {
+    return 0;
+  }
+
+  const yesterdayStr = getOffsetDateString(todayStr, -1);
+
+  let streak = 0;
+  let checkDate = null;
+
+  if (datesSet.has(todayStr)) {
+    // Active today: start count at 1, walk backward day by day
+    streak = 1;
+    checkDate = yesterdayStr;
+    while (datesSet.has(checkDate)) {
+      streak++;
+      checkDate = getOffsetDateString(checkDate, -1);
+    }
+  } else if (datesSet.has(yesterdayStr)) {
+    // Active yesterday, pending today: streak preserved from yesterday
+    streak = 1;
+    checkDate = getOffsetDateString(yesterdayStr, -1);
+    while (datesSet.has(checkDate)) {
+      streak++;
+      checkDate = getOffsetDateString(checkDate, -1);
+    }
+  } else {
+    // Neither today nor yesterday active: streak is reset to 0
+    return 0;
+  }
+
+  return streak;
 };

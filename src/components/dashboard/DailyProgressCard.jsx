@@ -1,11 +1,11 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
 import { getTodayDateString } from '../../utils/dateUtils';
-import { CheckCircle2, Clock, Zap } from 'lucide-react';
+import { CheckCircle2, Clock, Zap, Plus } from 'lucide-react';
 import { ProgressBar } from '../common/ProgressBar';
 
 export const DailyProgressCard = () => {
-  const { tasks } = useApp();
+  const { tasks, openQuickAdd } = useApp();
   const today = getTodayDateString();
 
   const todayTasks = tasks.filter((t) => t.date === today);
@@ -32,31 +32,51 @@ export const DailyProgressCard = () => {
 
           <div>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-              {percentage === 100 && total > 0
+              {total === 0
+                ? 'Welcome to Your Flow! 🚀'
+                : percentage === 100
                 ? 'All Caught Up! 🌟 Great work!'
                 : percentage >= 50
                 ? 'You are making steady progress!'
                 : 'Ready to flow through today’s plan?'}
             </h2>
             <p className="text-sm text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
-              You have completed <strong className="text-slate-800 dark:text-slate-200">{completed}</strong> of{' '}
-              <strong className="text-slate-800 dark:text-slate-200">{total}</strong> scheduled tasks for today.
-              {highPriorityLeft > 0 && (
-                <span className="text-rose-600 dark:text-rose-400 font-semibold ml-1.5">
-                  ({highPriorityLeft} high-priority pending)
-                </span>
+              {total === 0 ? (
+                <>Your daily queue is clear. Plan ahead and add your first task to start building your streak and momentum.</>
+              ) : (
+                <>
+                  You have completed <strong className="text-slate-800 dark:text-slate-200">{completed}</strong> of{' '}
+                  <strong className="text-slate-800 dark:text-slate-200">{total}</strong> scheduled tasks for today.
+                  {highPriorityLeft > 0 && (
+                    <span className="text-rose-600 dark:text-rose-400 font-semibold ml-1.5">
+                      ({highPriorityLeft} high-priority pending)
+                    </span>
+                  )}
+                </>
               )}
             </p>
           </div>
 
-          {/* Progress Bar */}
-          <div className="space-y-2 pt-1">
-            <div className="flex items-center justify-between text-xs font-bold">
-              <span className="text-slate-600 dark:text-slate-400 uppercase tracking-wider">Completion Rate</span>
-              <span className="text-blue-600 dark:text-blue-400 font-extrabold text-base">{percentage}%</span>
+          {total === 0 ? (
+            <div className="pt-1">
+              <button
+                onClick={() => openQuickAdd()}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-sm hover:shadow transition-all"
+              >
+                <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+                Add Your First Task
+              </button>
             </div>
-            <ProgressBar progress={percentage} height="h-3" color="bg-blue-600 dark:bg-blue-500" />
-          </div>
+          ) : (
+            /* Progress Bar */
+            <div className="space-y-2 pt-1">
+              <div className="flex items-center justify-between text-xs font-bold">
+                <span className="text-slate-600 dark:text-slate-400 uppercase tracking-wider">Completion Rate</span>
+                <span className="text-blue-600 dark:text-blue-400 font-extrabold text-base">{percentage}%</span>
+              </div>
+              <ProgressBar progress={percentage} height="h-3" color="bg-blue-600 dark:bg-blue-500" />
+            </div>
+          )}
         </div>
 
         {/* Right: Key Mini-metrics */}
