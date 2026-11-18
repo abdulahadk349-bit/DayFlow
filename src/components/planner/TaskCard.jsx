@@ -9,11 +9,19 @@ import {
   MoreVertical,
   Pencil,
   Trash2,
-  Bookmark
+  Bookmark,
+  RotateCw
 } from 'lucide-react';
 
 export const TaskCard = ({ task, onEdit }) => {
-  const { toggleTaskComplete, deleteTask, courses } = useApp();
+  const {
+    toggleTaskComplete,
+    deleteTask,
+    courses,
+    repeatTaskTomorrow,
+    dismissRepeatPrompt,
+    dismissedRepeatIds,
+  } = useApp();
   const [showMenu, setShowMenu] = useState(false);
 
   const matchedCourse = task.courseId
@@ -87,6 +95,39 @@ export const TaskCard = ({ task, onEdit }) => {
                 </span>
               </div>
             </div>
+
+            {/* Repeat Tomorrow Option when completed */}
+            {task.completed && (
+              !task.repeatedTomorrow && !dismissedRepeatIds?.has(task.id) ? (
+                <div className="mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-700/60 flex flex-wrap items-center justify-between gap-2 text-xs">
+                  <div className="flex items-center gap-1.5 text-blue-600 dark:text-blue-400 font-semibold text-xs">
+                    <RotateCw className="w-3.5 h-3.5" />
+                    <span>Repeat tomorrow?</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => repeatTaskTomorrow(task.id)}
+                      className="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-[11px] transition-colors shadow-xs"
+                    >
+                      Repeat Tomorrow
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => dismissRepeatPrompt(task.id)}
+                      className="px-2 py-1 rounded-lg text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 font-semibold text-[11px] transition-colors"
+                    >
+                      No Thanks
+                    </button>
+                  </div>
+                </div>
+              ) : task.repeatedTomorrow ? (
+                <div className="mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-700/60 flex items-center gap-1.5 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold">
+                  <Check className="w-3 h-3 stroke-[3]" />
+                  <span>Scheduled to repeat tomorrow</span>
+                </div>
+              ) : null
+            )}
           </div>
         </div>
 

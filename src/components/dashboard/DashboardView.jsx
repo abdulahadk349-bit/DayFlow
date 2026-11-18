@@ -56,7 +56,7 @@ export const DashboardView = () => {
                 ) : (
                   <>
                     {getGreeting()}! Welcome to{' '}
-                    <span className="text-blue-600 dark:text-blue-400">DayFlow</span>
+                    <span className="text-blue-600 dark:text-blue-400">Plannix</span>
                   </>
                 )}
               </h2>
@@ -73,7 +73,7 @@ export const DashboardView = () => {
           className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-sm transition-all hover:shadow active:scale-95 shrink-0"
         >
           <Plus className="w-4 h-4 stroke-[2.5]" />
-          Quick Add Task
+          {tasks.length === 0 ? 'Create your first task' : 'Quick Add Task'}
         </button>
       </div>
 

@@ -1,4 +1,4 @@
-// Pure Web Audio API chime generator for DayFlow Focus Timer
+// Pure Web Audio API chime generator for Plannix Focus Timer
 // Zero external assets or network dependencies required
 
 export const playTimerChime = () => {

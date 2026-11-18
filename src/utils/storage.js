@@ -1,4 +1,4 @@
-// LocalStorage helper utilities for DayFlow
+// LocalStorage helper utilities for Plannix
 import {
   initialTasks,
   initialCourses,
@@ -98,7 +98,7 @@ export const loadStoredProfile = () => {
     
     // Sanitize any demo values if previously stored
     const isDemoName = parsed.name === 'Alex Rivera' || parsed.name === 'Alex Rivera (Lead Builder)';
-    const isDemoEmail = parsed.email === 'alex.rivera@dayflow.app';
+    const isDemoEmail = parsed.email === 'alex.rivera@dayflow.app' || parsed.email === 'alex.rivera@plannix.app';
     const isDemoBio = typeof parsed.bio === 'string' && parsed.bio.includes('Computer Science student & part-time developer');
     const isDemoQuote = parsed.dailyQuote === 'Consistency is the playground of mastery.';
 

@@ -51,7 +51,7 @@ export const UpcomingDeadlinesWidget = () => {
                 className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs transition-colors shadow-xs"
               >
                 <Plus className="w-3.5 h-3.5" />
-                Schedule Task
+                {tasks.length === 0 ? 'Create your first task' : 'Schedule Task'}
               </button>
             </div>
           ) : (

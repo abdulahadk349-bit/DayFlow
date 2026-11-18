@@ -12,7 +12,7 @@ export const TaskFormModal = ({ isOpen, onClose, initialData = null }) => {
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState(settings?.defaultCategory || 'Study');
   const [date, setDate] = useState(getTodayDateString());
-  const [time, setTime] = useState('10:00');
+  const [time, setTime] = useState(initialData?.time || '');
   const [priority, setPriority] = useState('Medium');
   const [notes, setNotes] = useState('');
   const [courseId, setCourseId] = useState('');
@@ -22,7 +22,7 @@ export const TaskFormModal = ({ isOpen, onClose, initialData = null }) => {
       setTitle(initialData.title || '');
       setCategory(initialData.category || 'Study');
       setDate(initialData.date || getTodayDateString());
-      setTime(initialData.time || '10:00');
+      setTime(initialData.time || '');
       setPriority(initialData.priority || 'Medium');
       setNotes(initialData.notes || '');
       setCourseId(initialData.courseId || '');
@@ -30,7 +30,7 @@ export const TaskFormModal = ({ isOpen, onClose, initialData = null }) => {
       setTitle('');
       setCategory(settings?.defaultCategory || 'Study');
       setDate(getTodayDateString());
-      setTime('10:00');
+      setTime('');
       setPriority('Medium');
       setNotes('');
       setCourseId('');
@@ -45,7 +45,7 @@ export const TaskFormModal = ({ isOpen, onClose, initialData = null }) => {
       title: title.trim(),
       category,
       date,
-      time,
+      time: time || '',
       priority,
       notes: notes.trim(),
       courseId: category === 'Study' ? courseId : undefined,
@@ -155,9 +155,20 @@ export const TaskFormModal = ({ isOpen, onClose, initialData = null }) => {
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1.5">
-              Time
-            </label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
+                Time (Optional)
+              </label>
+              {time && (
+                <button
+                  type="button"
+                  onClick={() => setTime('')}
+                  className="text-[11px] text-blue-600 dark:text-blue-400 hover:underline"
+                >
+                  Clear time
+                </button>
+              )}
+            </div>
             <input
               type="time"
               value={time}

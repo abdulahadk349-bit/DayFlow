@@ -66,7 +66,10 @@ export const PlannerView = () => {
       if (a.date !== b.date) {
         return a.date.localeCompare(b.date);
       }
-      return (a.time || '').localeCompare(b.time || '');
+      if (a.time && b.time) return a.time.localeCompare(b.time);
+      if (!a.time && b.time) return -1;
+      if (a.time && !b.time) return 1;
+      return (a.title || '').localeCompare(b.title || '');
     });
   }, [filteredTasks]);
 
@@ -124,16 +127,20 @@ export const PlannerView = () => {
           <div className="w-16 h-16 mx-auto rounded-3xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-4">
             <Inbox className="w-8 h-8" />
           </div>
-          <h3 className="text-lg font-bold text-slate-900 dark:text-white">No tasks found</h3>
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+            {tasks.length === 0 ? 'No tasks created yet' : 'No tasks found'}
+          </h3>
           <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto mt-1">
-            There are no tasks matching your current filter criteria. Try adjusting your filters or create a new task.
+            {tasks.length === 0
+              ? 'Start organizing your schedule by creating your first task.'
+              : 'There are no tasks matching your current filter criteria. Try adjusting your filters or create a new task.'}
           </p>
           <button
             onClick={handleOpenAdd}
             className="mt-5 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 text-white font-semibold text-sm hover:bg-blue-700 transition-colors shadow-sm"
           >
             <Plus className="w-4 h-4" />
-            Add New Task
+            {tasks.length === 0 ? 'Create your first task' : 'Add New Task'}
           </button>
         </div>
       ) : viewMode === 'list' ? (

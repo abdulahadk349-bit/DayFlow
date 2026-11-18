@@ -1,6 +1,6 @@
-# DayFlow — Universal Productivity & Syllabus Planner
+# Plannix — Universal Productivity & Syllabus Planner
 
-DayFlow is a modern, responsive productivity application tailored for students, professionals, and freelancers to organize tasks, manage time blocks, track study curriculums, run custom deep-work timers, and customize their personal flow.
+Plannix is a modern, responsive productivity application tailored for students, professionals, and freelancers to organize tasks, manage time blocks, track study curriculums, run custom deep-work timers, and customize their personal flow.
 
 ## Features
 

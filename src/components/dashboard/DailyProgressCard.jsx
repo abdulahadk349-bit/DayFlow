@@ -33,7 +33,7 @@ export const DailyProgressCard = () => {
           <div>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               {total === 0
-                ? 'Welcome to Your Flow! 🚀'
+                ? 'Welcome to Plannix! 🚀'
                 : percentage === 100
                 ? 'All Caught Up! 🌟 Great work!'
                 : percentage >= 50
@@ -64,7 +64,7 @@ export const DailyProgressCard = () => {
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-sm hover:shadow transition-all"
               >
                 <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
-                Add Your First Task
+                Create your first task
               </button>
             </div>
           ) : (

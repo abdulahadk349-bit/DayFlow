@@ -1,4 +1,4 @@
-// Initial data and configuration definitions for DayFlow
+// Initial data and configuration definitions for Plannix
 
 export const initialTasks = [];
 

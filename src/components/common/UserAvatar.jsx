@@ -35,7 +35,7 @@ export const UserAvatar = ({ profile, size = 'md', className = '', showRoleBadge
         .slice(0, 2)
         .join('')
         .toUpperCase()
-    : 'DF';
+    : 'PX';
 
   const selectedPreset = presetAvatars.find((p) => p.id === profile?.avatarPreset) || presetAvatars[0];
   const IconComponent = selectedPreset.icon;

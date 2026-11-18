@@ -19,6 +19,7 @@ import {
 } from '../utils/storage';
 import {
   getTodayDateString,
+  getOffsetDateString,
   computeActiveDates,
   calculateStreak
 } from '../utils/dateUtils';
@@ -39,6 +40,8 @@ export const AppProvider = ({ children }) => {
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
   const [quickAddCategory, setQuickAddCategory] = useState(settings?.defaultCategory || 'Study');
   const [toastMessage, setToastMessage] = useState(null);
+  const [repeatPrompt, setRepeatPrompt] = useState(null);
+  const [dismissedRepeatIds, setDismissedRepeatIds] = useState(() => new Set());
 
   // Sync tasks to localStorage
   useEffect(() => {
@@ -196,10 +199,11 @@ export const AppProvider = ({ children }) => {
       id: `task-${Date.now()}`,
       completed: false,
       date: taskData.date || getTodayDateString(),
-      time: taskData.time || '10:00',
+      time: taskData.time !== undefined && taskData.time !== null ? taskData.time : '',
       priority: taskData.priority || 'Medium',
       category: taskData.category || settings?.defaultCategory || 'Study',
       notes: taskData.notes || '',
+      repeatedTomorrow: false,
       ...taskData,
     };
     setTasks((prev) => [newTask, ...prev]);
@@ -217,11 +221,14 @@ export const AppProvider = ({ children }) => {
   const deleteTask = (id) => {
     const t = tasks.find((item) => item.id === id);
     setTasks((prev) => prev.filter((item) => item.id !== id));
+    setRepeatPrompt((prev) => (prev?.taskId === id ? null : prev));
     showToast(t ? `Deleted "${t.title}"` : 'Task deleted', 'neutral');
   };
 
   const toggleTaskComplete = (id) => {
     const currentToday = getTodayDateString();
+    let justCompletedTask = null;
+
     setTasks((prev) =>
       prev.map((t) => {
         if (t.id === id) {
@@ -230,13 +237,66 @@ export const AppProvider = ({ children }) => {
             showToast(`Completed "${t.title}"! 🎉`, 'success');
             // If the task date is in the past (e.g. testing controlled dates), preserve task date
             const compDate = t.date && t.date < currentToday ? t.date : currentToday;
-            return { ...t, completed: true, completedDate: compDate };
+            justCompletedTask = { ...t, completed: true, completedDate: compDate };
+            return justCompletedTask;
           }
-          return { ...t, completed: false, completedDate: null };
+          return { ...t, completed: false, completedDate: null, repeatedTomorrow: false };
         }
         return t;
       })
     );
+
+    if (justCompletedTask) {
+      if (!justCompletedTask.repeatedTomorrow && !dismissedRepeatIds.has(id)) {
+        setRepeatPrompt({ taskId: id, title: justCompletedTask.title });
+      }
+    } else {
+      setRepeatPrompt((prev) => (prev?.taskId === id ? null : prev));
+    }
+  };
+
+  const repeatTaskTomorrow = (taskId) => {
+    const task = tasks.find((t) => t.id === taskId);
+    if (!task) return null;
+
+    // Prevent duplicate task creation if already repeated
+    if (task.repeatedTomorrow) {
+      showToast('Task already scheduled for tomorrow', 'info');
+      setRepeatPrompt(null);
+      return null;
+    }
+
+    const tomorrowStr = getOffsetDateString(getTodayDateString(), 1);
+
+    const newTask = {
+      id: `task-${Date.now()}`,
+      title: task.title,
+      notes: task.notes || '',
+      category: task.category,
+      priority: task.priority,
+      courseId: task.courseId || undefined,
+      date: tomorrowStr,
+      time: task.time || '', // preserve time if exists, empty otherwise
+      completed: false,
+      completedDate: null,
+      repeatedTomorrow: false,
+    };
+
+    setTasks((prev) => [
+      newTask,
+      ...prev.map((t) => (t.id === taskId ? { ...t, repeatedTomorrow: true } : t)),
+    ]);
+
+    setRepeatPrompt(null);
+    showToast(`"${newTask.title}" scheduled for tomorrow! 📅`, 'success');
+    return newTask;
+  };
+
+  const dismissRepeatPrompt = (taskId) => {
+    if (taskId) {
+      setDismissedRepeatIds((prev) => new Set(prev).add(taskId));
+    }
+    setRepeatPrompt((prev) => (prev?.taskId === taskId || !taskId ? null : prev));
   };
 
   // Course & Syllabus Actions
@@ -379,6 +439,11 @@ export const AppProvider = ({ children }) => {
         updateTask,
         deleteTask,
         toggleTaskComplete,
+        repeatPrompt,
+        setRepeatPrompt,
+        repeatTaskTomorrow,
+        dismissRepeatPrompt,
+        dismissedRepeatIds,
         addCourse,
         updateCourse,
         deleteCourse,

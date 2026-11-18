@@ -70,7 +70,7 @@ export const Sidebar = ({ isMobileOpen, setIsMobileOpen }) => {
               </div>
               <div>
                 <span className="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-1">
-                  Day<span className="text-blue-600 dark:text-blue-400">Flow</span>
+                  Plann<span className="text-blue-600 dark:text-blue-400">ix</span>
                 </span>
                 <p className="text-[11px] font-medium text-slate-400 dark:text-slate-500">
                   Focus • Plan • Achieve
@@ -151,30 +151,22 @@ export const Sidebar = ({ isMobileOpen, setIsMobileOpen }) => {
           {/* Study & Focus Streak Card */}
           <div className="px-4 py-3">
             <div className="bg-gradient-to-br from-blue-50/80 to-slate-50 dark:from-slate-800/80 dark:to-slate-800/40 border border-blue-100 dark:border-slate-800 rounded-2xl p-3.5">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <span className={`p-1.5 rounded-lg ${
-                    streak > 0 
-                      ? 'bg-orange-100 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400'
-                      : 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500'
-                  }`}>
-                    <Flame className={`w-4 h-4 ${streak > 0 ? 'fill-orange-500 text-orange-500' : ''}`} />
+              <div className="flex items-center gap-2.5">
+                <span className={`p-1.5 rounded-lg shrink-0 ${
+                  streak > 0 
+                    ? 'bg-orange-100 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500'
+                }`}>
+                  <Flame className={`w-4 h-4 ${streak > 0 ? 'fill-orange-500 text-orange-500' : ''}`} />
+                </span>
+                <div>
+                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
+                    {streak > 0 ? `${streak} Day Streak!` : 'Start Your Streak!'}
                   </span>
-                  <div>
-                    <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
-                      {streak > 0 ? `${streak} Day Streak!` : 'Start Your Streak!'}
-                    </span>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                      {streak > 0 ? 'Keep up the momentum' : 'Complete a task today'}
-                    </p>
-                  </div>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                    {streak > 0 ? 'Keep up the momentum' : 'Complete a task today'}
+                  </p>
                 </div>
-              </div>
-              <div className="w-full bg-slate-200/70 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
-                <div 
-                  className={`h-full rounded-full transition-all duration-500 ${streak > 0 ? 'bg-orange-500' : 'bg-transparent'}`} 
-                  style={{ width: streak > 0 ? `${Math.min(100, Math.max(15, streak * 20))}%` : '0%' }}
-                />
               </div>
             </div>
           </div>

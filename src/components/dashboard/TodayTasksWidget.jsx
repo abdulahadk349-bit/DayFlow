@@ -2,10 +2,18 @@ import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { getTodayDateString, formatTime12h } from '../../utils/dateUtils';
 import { CategoryBadge, PriorityBadge } from '../common/Badge';
-import { Check, Plus, Clock, ChevronRight, CheckCircle2 } from 'lucide-react';
+import { Check, Plus, Clock, ChevronRight, CheckCircle2, RotateCw } from 'lucide-react';
 
 export const TodayTasksWidget = () => {
-  const { tasks, toggleTaskComplete, openQuickAdd, setActiveTab } = useApp();
+  const {
+    tasks,
+    toggleTaskComplete,
+    openQuickAdd,
+    setActiveTab,
+    repeatTaskTomorrow,
+    dismissRepeatPrompt,
+    dismissedRepeatIds,
+  } = useApp();
   const [selectedCategory, setSelectedCategory] = useState('All');
   const today = getTodayDateString();
 
@@ -63,19 +71,23 @@ export const TodayTasksWidget = () => {
                 <CheckCircle2 className="w-6 h-6" />
               </div>
               <p className="text-sm font-bold text-slate-800 dark:text-slate-200">
-                {selectedCategory === 'All'
+                {tasks.length === 0
+                  ? 'Your schedule is clear'
+                  : selectedCategory === 'All'
                   ? 'No tasks scheduled for today!'
                   : `No ${selectedCategory} tasks for today.`}
               </p>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                Add a new task to organize your day.
+                {tasks.length === 0
+                  ? 'Get started by creating your first task to organize your day.'
+                  : 'Add a new task to organize your day.'}
               </p>
               <button
                 onClick={() => openQuickAdd(selectedCategory === 'All' ? null : selectedCategory)}
-                className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 text-white font-semibold text-xs hover:bg-blue-700 transition-colors"
+                className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 text-white font-semibold text-xs hover:bg-blue-700 transition-colors shadow-xs"
               >
                 <Plus className="w-4 h-4" />
-                Add Today's Task
+                {tasks.length === 0 ? 'Create your first task' : "Add Today's Task"}
               </button>
             </div>
           ) : (
@@ -89,7 +101,7 @@ export const TodayTasksWidget = () => {
                       : 'bg-white dark:bg-slate-800/80 border-slate-200/80 dark:border-slate-700/80 hover:border-blue-300 dark:hover:border-blue-500 hover:shadow-card'
                   }`}
                 >
-                  <div className="flex items-start gap-3 min-w-0">
+                  <div className="flex items-start gap-3 min-w-0 flex-1">
                     {/* Completion checkbox */}
                     <button
                       onClick={() => toggleTaskComplete(task.id)}
@@ -103,7 +115,7 @@ export const TodayTasksWidget = () => {
                       {task.completed && <Check className="w-3.5 h-3.5 stroke-[3]" />}
                     </button>
 
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex-1">
                       <p
                         className={`text-sm font-semibold leading-snug transition-all ${
                           task.completed
@@ -130,6 +142,39 @@ export const TodayTasksWidget = () => {
                           </span>
                         )}
                       </div>
+
+                      {/* Repeat Tomorrow Option when completed */}
+                      {task.completed && (
+                        !task.repeatedTomorrow && !dismissedRepeatIds?.has(task.id) ? (
+                          <div className="mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-700/60 flex flex-wrap items-center justify-between gap-2 text-xs">
+                            <div className="flex items-center gap-1 text-blue-600 dark:text-blue-400 font-semibold text-xs">
+                              <RotateCw className="w-3.5 h-3.5" />
+                              <span>Repeat tomorrow?</span>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                              <button
+                                type="button"
+                                onClick={() => repeatTaskTomorrow(task.id)}
+                                className="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-[11px] transition-colors shadow-xs"
+                              >
+                                Repeat Tomorrow
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => dismissRepeatPrompt(task.id)}
+                                className="px-2 py-1 rounded-lg text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 font-semibold text-[11px] transition-colors"
+                              >
+                                No Thanks
+                              </button>
+                            </div>
+                          </div>
+                        ) : task.repeatedTomorrow ? (
+                          <div className="mt-2 pt-1.5 border-t border-slate-100 dark:border-slate-700/60 flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold">
+                            <Check className="w-3 h-3 stroke-[3]" />
+                            <span>Scheduled to repeat tomorrow</span>
+                          </div>
+                        ) : null
+                      )}
                     </div>
                   </div>
                 </div>

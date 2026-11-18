@@ -193,7 +193,7 @@ export const ProfileView = () => {
                 </span>
               </div>
               <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
-                {email || 'user@dayflow.app'}
+                {email || 'user@plannix.app'}
               </p>
               <p className="text-sm text-slate-600 dark:text-slate-400 mt-2 max-w-lg leading-relaxed">
                 {bio || 'Set your personal bio in the form below.'}
@@ -237,7 +237,7 @@ export const ProfileView = () => {
                 Profile Information
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Personal identity and visual representation across DayFlow
+                Personal identity and visual representation across Plannix
               </p>
             </div>
           </div>
@@ -382,7 +382,7 @@ export const ProfileView = () => {
               maxLength={180}
               value={bio}
               onChange={(e) => setBio(e.target.value)}
-              placeholder="Tell DayFlow about your focus goals, studies, or daily rhythm..."
+              placeholder="Tell Plannix about your focus goals, studies, or daily rhythm..."
               className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/80 text-slate-900 dark:text-white placeholder:text-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
             />
           </div>

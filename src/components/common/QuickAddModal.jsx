@@ -11,7 +11,7 @@ export const QuickAddModal = ({ isOpen, onClose, defaultCategory = null }) => {
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState(effectiveCategory);
   const [date, setDate] = useState(getTodayDateString());
-  const [time, setTime] = useState('10:00');
+  const [time, setTime] = useState('');
   const [priority, setPriority] = useState('Medium');
   const [notes, setNotes] = useState('');
   const [courseId, setCourseId] = useState('');
@@ -23,7 +23,7 @@ export const QuickAddModal = ({ isOpen, onClose, defaultCategory = null }) => {
       setTitle('');
       setNotes('');
       setPriority('Medium');
-      setTime('10:00');
+      setTime('');
       setCourseId('');
     }
   }, [isOpen, effectiveCategory]);
@@ -36,7 +36,7 @@ export const QuickAddModal = ({ isOpen, onClose, defaultCategory = null }) => {
       title: title.trim(),
       category,
       date,
-      time,
+      time: time || '',
       priority,
       notes: notes.trim(),
       courseId: category === 'Study' ? courseId : undefined,
@@ -136,9 +136,20 @@ export const QuickAddModal = ({ isOpen, onClose, defaultCategory = null }) => {
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1.5">
-              Scheduled Time
-            </label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
+                Scheduled Time (Optional)
+              </label>
+              {time && (
+                <button
+                  type="button"
+                  onClick={() => setTime('')}
+                  className="text-[11px] text-blue-600 dark:text-blue-400 hover:underline"
+                >
+                  Clear time
+                </button>
+              )}
+            </div>
             <input
               type="time"
               value={time}

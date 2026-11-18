@@ -1,4 +1,4 @@
-// Utility functions for dates and time management in DayFlow
+// Utility functions for dates and time management in Plannix
 
 export const formatDate = (dateString) => {
   if (!dateString) return '';
