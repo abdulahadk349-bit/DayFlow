@@ -22,7 +22,7 @@ export const DashboardView = () => {
 
   const todayTasks = tasks.filter((t) => t.date === today);
   const completedToday = todayTasks.filter((t) => t.completed).length;
-  const pendingTotal = tasks.filter((t) => !t.completed).length;
+  const pendingToday = todayTasks.filter((t) => !t.completed).length;
 
   // Total chapters across all syllabus courses
   const totalChapters = courses.reduce((acc, c) => acc + c.chapters.length, 0);
@@ -87,9 +87,9 @@ export const DashboardView = () => {
           colorScheme="emerald"
         />
         <StatCard
-          title="Pending Total"
-          value={pendingTotal}
-          subtitle="All active tasks"
+          title="Pending Today"
+          value={pendingToday}
+          subtitle="Tasks remaining"
           icon={Clock}
           colorScheme="blue"
         />
